@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4 text-center text-blue-600">URL Shortener</h1>
+        <form id="urlForm" class="flex flex-col gap-4">
+            <input
+                id="urlInput"
+                type="url"
+                required
+                placeholder="Enter your long URL here"
+                class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button
+                type="submit"
+                class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            >
+                Shorten URL
+            </button>
+        </form>
+        <div id="loading" class="text-center mt-4 hidden">Shortening...</div>
+        <div id="result" class="mt-6 hidden">
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold">Short URL:</label>
+                <div class="flex">
+                    <input
+                        id="shortUrl"
+                        type="text"
+                        readonly
+                        class="border rounded-l px-3 py-2 flex-1 bg-gray-100"
+                    />
+                    <button
+                        onclick="copyToClipboard()"
+                        class="bg-green-500 text-white px-4 rounded-r hover:bg-green-600 transition"
+                    >Copy</button>
+                </div>
+                <div class="mt-2">
+                    <span class="font-semibold">Total Clicks:</span>
+                    <span id="totalClicks">0</span>
+                    <button
+                        onclick="refreshAnalytics()"
+                        class="ml-2 text-blue-500 underline"
+                    >Refresh</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('urlForm');
+        const urlInput = document.getElementById('urlInput');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const shortUrlInput = document.getElementById('shortUrl');
+        const totalClicks = document.getElementById('totalClicks');
+        let currentShortId = null;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loading.classList.remove('hidden');
+            result.classList.add('hidden');
+            const url = urlInput.value.trim();
+            try {
+                const res = await fetch('/url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await res.json();
+                loading.classList.add('hidden');
+                if (data.id) {
+                    currentShortId = data.id;
+                    const shortUrl = `${window.location.origin}/${data.id}`;
+                    shortUrlInput.value = shortUrl;
+                    result.classList.remove('hidden');
+                    fetchAnalytics();
+                } else {
+                    alert(data.error || 'Something went wrong!');
+                }
+            } catch (err) {
+                loading.classList.add('hidden');
+                alert('Failed to shorten URL. Please try again.');
+            }
+        });
+
+        window.copyToClipboard = function() {
+            shortUrlInput.select();
+            document.execCommand('copy');
+        }
+
+        async function fetchAnalytics() {
+            if (!currentShortId) return;
+            try {
+                const res = await fetch(`/url/analytics/${currentShortId}`);
+                const data = await res.json();
+                totalClicks.textContent = data.totalClicks || 0;
+            } catch {
+                totalClicks.textContent = 'N/A';
+            }
+        }
+
+        window.refreshAnalytics = fetchAnalytics;
+    </script>
+</body>
+</html>
