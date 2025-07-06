@@ -5,11 +5,13 @@ const URL = require("./models/url");
 const path = require("path");
 
 const app = express();
-const port = 8001;
+const port = process.env.PORT || 8001;
 
-connectToMongoDB("mongodb://localhost:27017/url-shortner").then(
-  console.log("MongoDB Connected")
-);
+// Use environment variable for MongoDB connection
+const MONGO_URL =
+  process.env.MONGO_URL || "mongodb://localhost:27017/url-shortner";
+
+connectToMongoDB(MONGO_URL).then(console.log("MongoDB Connected"));
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -39,5 +41,5 @@ app.get("/:shortId", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Server listening on port ${port}`);
 });
