@@ -1,0 +1,53 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables
+.env
+
+# Directory for coverage reports
+coverage/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm/
+
+# Optional REPL history
+.node_repl_history
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# Build output
+dist/
+build/
+
+# Optional: MacOS Finder files
+.AppleDouble
+.LSOverride
+
+# Optional: Linux trash folder
+.Trash-*
+
+# Optional: Windows hidden/system files
+ehthumbs.db
+Desktop.ini
