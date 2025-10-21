@@ -5,11 +5,11 @@ const URL = require("./models/url");
 const path = require("path");
 
 const app = express();
-const port = process.env.PORT || 8001;
+const port = process.env.PORT;
 
 // Use environment variable for MongoDB connection
 const MONGO_URL =
-  process.env.MONGO_URL || "mongodb://localhost:27017/url-shortner";
+  process.env.MONGO_URL;
 
 connectToMongoDB(MONGO_URL).then(console.log("MongoDB Connected"));
 
